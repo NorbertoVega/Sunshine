@@ -2,10 +2,15 @@ package com.example.android.sunshine;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.example.android.sunshine.R;
+import com.example.android.sunshine.data.SunshinePreferences;
+import com.example.android.sunshine.utilities.NetworkUtils;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,26 +21,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
         mWeatherTextView = (TextView) findViewById(R.id.tv_weather_data);
+        loadWeatherData();
+    }
 
-        String [] weatherdata = {
-                "Today, May 17 - Clear - 17°C / 15°C",
-                "Tomorrow - Cloudy - 19°C / 15°C",
-                "Thursday - Rainy- 30°C / 11°C",
-                "Friday - Thunderstorms - 21°C / 9°C",
-                "Saturday - Thunderstorms - 16°C / 7°C",
-                "Sunday - Rainy - 16°C / 8°C",
-                "Monday - Partly Cloudy - 15°C / 10°C",
-                "Tue, May 24 - Meatballs - 16°C / 18°C",
-                "Wed, May 25 - Cloudy - 19°C / 15°C",
-                "Thu, May 26 - Stormy - 30°C / 11°C",
-                "Fri, May 27 - Hurricane - 21°C / 9°C",
-                "Sat, May 28 - Meteors - 16°C / 7°C",
-                "Sun, May 29 - Apocalypse - 16°C / 8°C",
-                "Mon, May 30 - Post Apocalypse - 15°C / 10°C",
-        };
+    public void loadWeatherData(){
+        String locationQuery = SunshinePreferences.getPreferredWeatherLocation(this);
+        URL weatherSearchUrl = NetworkUtils.buildUrl(locationQuery);
+        new FetchWeatherTask().execute(weatherSearchUrl);
+    }
 
-        for (int i = 0;i<weatherdata.length;i++){
-            mWeatherTextView.append(weatherdata[i]+"\n\n\n");
+    private class FetchWeatherTask extends AsyncTask<URL, Void, String>{
+
+        @Override
+        protected String doInBackground(URL... urls) {
+            URL searchUrl = urls[0];
+            String weatherResults = null;
+            try{
+                weatherResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+            return weatherResults;
+        }
+
+        @Override
+        protected void onPostExecute(String weatherResults) {
+            if(weatherResults != null && !weatherResults.isEmpty()){
+                mWeatherTextView.setText(weatherResults);
+            }
         }
     }
 }
