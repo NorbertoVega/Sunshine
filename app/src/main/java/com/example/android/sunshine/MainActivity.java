@@ -1,9 +1,12 @@
 package com.example.android.sunshine;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.android.sunshine.data.SunshinePreferences;
@@ -28,6 +31,23 @@ public class MainActivity extends AppCompatActivity {
         String locationQuery = SunshinePreferences.getPreferredWeatherLocation(this);
         URL weatherSearchUrl = NetworkUtils.buildUrl(locationQuery);
         new FetchWeatherTask().execute(weatherSearchUrl);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.forecast, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemClickedId = item.getItemId();
+        if (itemClickedId == R.id.action_refresh){
+            mWeatherTextView.setText("");
+            loadWeatherData();
+            return true;
+        }
+        return true;
     }
 
     private class FetchWeatherTask extends AsyncTask<URL, Void, String>{
