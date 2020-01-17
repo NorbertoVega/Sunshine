@@ -10,8 +10,9 @@ import java.net.URL;
 import java.util.Scanner;
 
 public final class NetworkUtils {
+    private static String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String DYNAMIC_WEATHR_URL = "https://andfun-weather.udacity.com/weather";
+    private static final String DYNAMIC_WEATHER_URL = "https://andfun-weather.udacity.com/weather";
     private static final String STATIC_WEATHR_URL = "https://andfun-weather.udacity.com/staticweather";
     private static final String FORECAST_BASE_URL = STATIC_WEATHR_URL;
 
@@ -29,6 +30,9 @@ public final class NetworkUtils {
     public static URL buildUrl(String locationQuery){
         Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, locationQuery)
+                        .appendQueryParameter(FORMAT_PARAM, format)
+                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                         .build();
         URL url = null;
         try {
