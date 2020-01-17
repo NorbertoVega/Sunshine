@@ -31,7 +31,7 @@ public final class SunshineWeatherUtils {
         String formattedHigh = formatTemperature(context, roundedHigh);
         String formattedLow = formatTemperature(context, roundedLow);
 
-        return  formattedHigh + "/  " + formattedLow;
+        return  formattedHigh + " / " + formattedLow;
     }
 
     public static String getFormattedWind(Context context, float windSpeed, float degrees) {

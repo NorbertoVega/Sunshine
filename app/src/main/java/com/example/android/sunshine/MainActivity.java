@@ -1,8 +1,7 @@
 package com.example.android.sunshine;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,11 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utilities.NetworkUtils;
+import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
-import java.io.IOException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     // TODO (35) Add a private ForecastAdapter variable called mForecastAdapter
 
     private TextView mErrorMessageTextView;
-    private ProgressBar mProgressBar;
+    private ProgressBar mLoadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,14 +99,14 @@ public class MainActivity extends AppCompatActivity {
         // TODO (42) Use mRecyclerView.setAdapter and pass in mForecastAdapter
 
 
-        mProgressBar = (ProgressBar) findViewById(R.id.loading_indicator_pb);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
         loadWeatherData();
     }
 
     public void loadWeatherData(){
-        String locationQuery = SunshinePreferences.getPreferredWeatherLocation(this);
-        URL weatherSearchUrl = NetworkUtils.buildUrl(locationQuery);
-        new FetchWeatherTask().execute(weatherSearchUrl);
+        showWeatherData();
+        String location = SunshinePreferences.getPreferredWeatherLocation(this);
+        new FetchWeatherTask().execute(location);
     }
 
     private void showErrorMessage(){
@@ -131,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int itemClickedId = item.getItemId();
         if (itemClickedId == R.id.action_refresh){
             // TODO (46) Instead of setting the text to "", set the adapter to null before refreshing
@@ -147,8 +145,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            mProgressBar.setVisibility(View.VISIBLE);
-            mWeatherTextView.setVisibility(View.INVISIBLE);
+           super.onPreExecute();
+           mLoadingIndicator.setVisibility(View.VISIBLE);
+
         }
 
         @Override
@@ -159,13 +158,20 @@ public class MainActivity extends AppCompatActivity {
             URL weatherRequestUrl = NetworkUtils.buildUrl(location);
 
             try{
-                String
+                String jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(weatherRequestUrl);
+
+                String[] simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringFromJson(MainActivity.this, jsonWeatherResponse);
+
+                return simpleJsonWeatherData;
+            } catch (Exception e){
+                e.printStackTrace();
+                return null;
             }
         }
 
         @Override
         protected void onPostExecute(String[] weatherData) {
-            mProgressBar.setVisibility(View.INVISIBLE);
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
             if(weatherData != null){
                 showWeatherData();
 
