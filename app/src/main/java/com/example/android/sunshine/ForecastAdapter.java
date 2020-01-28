@@ -12,8 +12,14 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     private String[] mWeatherData;
 
-    public ForecastAdapter(){
+    private final ForecastAdapterOnClickHandler mClickHandler;
 
+    public interface ForecastAdapterOnClickHandler{
+        void onListItemClick(String weatherData);
+    }
+
+    public ForecastAdapter(ForecastAdapterOnClickHandler clickHandler){
+        mClickHandler = clickHandler;
     }
 
     @Override
@@ -21,9 +27,8 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.forecast_list_item, parent, false);
-        ForecastAdapterViewHolder viewHolder = new ForecastAdapterViewHolder(view);
 
-        return viewHolder;
+        return new ForecastAdapterViewHolder(view);
     }
 
     @Override
@@ -44,19 +49,23 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         notifyDataSetChanged();
     }
 
-    class ForecastAdapterViewHolder extends RecyclerView.ViewHolder{
+    class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final TextView mWeatherTextView;
 
         public ForecastAdapterViewHolder(View itemView){
             super(itemView);
             mWeatherTextView = itemView.findViewById(R.id.tv_weather_data);
+            itemView.setOnClickListener(this);
         }
 
         void bind(int position){
             mWeatherTextView.setText(mWeatherData[position]);
         }
 
-
+        @Override
+        public void onClick(View view) {
+            mClickHandler.onListItemClick(mWeatherData[getAdapterPosition()]);
+        }
     }
 }
