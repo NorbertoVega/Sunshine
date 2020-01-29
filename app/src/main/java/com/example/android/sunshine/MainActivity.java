@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -63,6 +64,20 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
+    public void showLocationOnMap(){
+        String address = "13106 Lago steffen, BRC";
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("geo")
+                    .path("0,0")
+                    .appendQueryParameter("q", address);
+        Uri addressUri = builder.build();
+        Intent addressIntent = new Intent(Intent.ACTION_VIEW);
+        addressIntent.setData(addressUri);
+        if (addressIntent.resolveActivity(getPackageManager()) != null){
+            startActivity(addressIntent);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.forecast, menu);
@@ -75,6 +90,10 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         if (itemClickedId == R.id.action_refresh){
             mForecastAdapter.setWeatherData(null);
             loadWeatherData();
+            return true;
+        }
+        if (itemClickedId == R.id.action_map){
+            showLocationOnMap();
             return true;
         }
         return true;
