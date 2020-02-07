@@ -98,6 +98,12 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
             showLocationOnMap();
             return true;
         }
+
+        if (itemClickedId == R.id.action_settings){
+            Intent startActivityIntent = new Intent(this, SettingsActivity.class);
+            startActivity(startActivityIntent);
+            return true;
+        }
         return true;
     }
 

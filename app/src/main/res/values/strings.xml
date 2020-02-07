@@ -25,7 +25,6 @@
     <string name="app_name">Sunshine</string>
 
 
-
     <!-- - - - - - - - - - - - - -->
     <!--Used by SunshineDateUtils-->
     <!-- - - - - - - - - - - - - -->
@@ -136,6 +135,8 @@
 
     <string name="action_share">Share</string>
     <string name="action_map">Map</string>
+
+    <string name="action_settings">Settings</string>
 
     <!-- - - - - - - - - - - - - - - -->
     <!-- Used by OpenWeatherJsonUtils-->

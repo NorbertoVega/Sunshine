@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
@@ -41,5 +42,18 @@ public class DetailActivity extends AppCompatActivity {
                                         .getIntent();
         menuItem.setIntent(shareIntent);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemClickedId = item.getItemId();
+
+        if (itemClickedId == R.id.action_settings){
+            Intent startActivityIntent = new Intent(this, SettingsActivity.class);
+            startActivity(startActivityIntent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
