@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,9 +27,11 @@ import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler,
-        LoaderManager.LoaderCallbacks<String[]> {
+        LoaderManager.LoaderCallbacks<String[]>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int FORECAST_LOADER_ID = 33;
+    private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
 
     private TextView mErrorMessageTextView;
     private ProgressBar mLoadingIndicator;
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
         getLoaderManager().initLoader(FORECAST_LOADER_ID, null, this);
 
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
     }
 
     private void showErrorMessage(){
@@ -67,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
     }
 
     public void showLocationOnMap(){
-        String address = "13106 Lago steffen";
+        String address = SunshinePreferences.getPreferredWeatherLocation(this);
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("geo")
                     .path("0,0")
@@ -176,4 +182,25 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
 
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        PREFERENCES_HAVE_BEEN_UPDATED = true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(PREFERENCES_HAVE_BEEN_UPDATED){
+            mForecastAdapter.setWeatherData(null);
+            getLoaderManager().restartLoader(FORECAST_LOADER_ID, null,this);
+            PREFERENCES_HAVE_BEEN_UPDATED = false;
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+    }
 }
