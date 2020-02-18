@@ -8,7 +8,7 @@ import com.example.android.sunshine.data.WeatherContract.WeatherEntry;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "weather.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public WeatherDbHelper(Context context){
         super(context, DATABASE_NAME, null , DATABASE_VERSION);
@@ -19,14 +19,14 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + WeatherEntry.TABLE_NAME + " (" +
                 WeatherEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                WeatherEntry.COLUMN_DATE + "INTEGER, " +
-                WeatherEntry.COLUMN_WEATHER_ID + " INTEGER, " +
-                WeatherEntry.COLUMN_MIN_TEMP + " REAL, " +
-                WeatherEntry.COLUMN_MAX_TEMP + " REAL, " +
-                WeatherEntry.COLUMN_HUMIDITY + " REAL, " +
-                WeatherEntry.COLUMN_PRESSURE + " REAL, " +
-                WeatherEntry.COLUMN_WIND_SPEED + "REAL, " +
-                WeatherEntry.COLUMN_DEGREES + " REAL" +
+                WeatherEntry.COLUMN_DATE + "INTEGER NOT NULL, " +
+                WeatherEntry.COLUMN_WEATHER_ID + " INTEGER NOT NULL, " +
+                WeatherEntry.COLUMN_MIN_TEMP + " REAL NOT NULL, " +
+                WeatherEntry.COLUMN_MAX_TEMP + " REAL NOT NULL, " +
+                WeatherEntry.COLUMN_HUMIDITY + " REAL NOT NULL, " +
+                WeatherEntry.COLUMN_PRESSURE + " REAL NOT NULL, " +
+                WeatherEntry.COLUMN_WIND_SPEED + "REAL NOT NULL, " +
+                WeatherEntry.COLUMN_DEGREES + " REAL NOT NULL" +
                 "); ";
 
         sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
@@ -35,5 +35,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
+        onCreate(sqLiteDatabase);
     }
 }
