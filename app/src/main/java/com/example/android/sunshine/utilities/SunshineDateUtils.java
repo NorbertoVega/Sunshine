@@ -26,6 +26,16 @@ public final class SunshineDateUtils {
         return retValNew;
     }
 
+    public static boolean isDateNormalized(long millisSinceEpoch) {
+        boolean isDateNormalized = false;
+        if (millisSinceEpoch % DAY_IN_MILLIS == 0) {
+            isDateNormalized = true;
+        }
+
+        return isDateNormalized;
+    }
+
+
     public static long getLocalDateFromUTC(long utcDate){
         TimeZone tz = TimeZone.getDefault();
         long gmtOffset = tz.getOffset(utcDate);

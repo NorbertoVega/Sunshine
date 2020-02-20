@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.android.sunshine.data.WeatherContract.WeatherEntry;
+import com.example.android.sunshine.utilities.SunshineDateUtils;
 
 public class weatherProvider extends ContentProvider {
 
@@ -36,7 +37,39 @@ public class weatherProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        throw new RuntimeException("Student, you need to implement the bulkInsert mehtod!");
+        final SQLiteDatabase database = mOpenHelper.getWritableDatabase();
+
+        int match = sUriMatcher.match(uri);
+        int insertRows = 0;
+
+        switch (match){
+            case CODE_WEATHER:
+                database.beginTransaction();
+                try{
+                    for (int i = 0; i< values.length; i++){
+                        long weatherDate = values[i].getAsLong(WeatherEntry.COLUMN_DATE);
+
+                        if (!SunshineDateUtils.isDateNormalized(weatherDate))
+                            throw new IllegalArgumentException("Date must be normalized to insert");
+
+                        long id = database.insert(WeatherEntry.TABLE_NAME, null, values[i]);
+                        if (id > 0)
+                            insertRows ++;
+                    }
+                    database.setTransactionSuccessful();
+                }
+                finally {
+                    database.endTransaction();
+                }
+
+                if (insertRows > 0)
+                    getContext().getContentResolver().notifyChange(uri, null);
+
+                return insertRows;
+
+            default:
+                return super.bulkInsert(uri, values);
+        }
     }
 
     @Nullable
@@ -78,8 +111,24 @@ public class weatherProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+
+        final SQLiteDatabase database = mOpenHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int rowsDeleted = 0;
+
+        switch (match){
+            case CODE_WEATHER:
+                rowsDeleted = database.delete(WeatherEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (rowsDeleted != 0)
+            getContext().getContentResolver().notifyChange(uri, null);
+
+        return rowsDeleted;
     }
 
     @Nullable
