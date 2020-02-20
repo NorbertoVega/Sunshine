@@ -8,7 +8,7 @@ import com.example.android.sunshine.data.WeatherContract.WeatherEntry;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "weather.db";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     public WeatherDbHelper(Context context){
         super(context, DATABASE_NAME, null , DATABASE_VERSION);
@@ -26,8 +26,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 WeatherEntry.COLUMN_HUMIDITY + " REAL NOT NULL, " +
                 WeatherEntry.COLUMN_PRESSURE + " REAL NOT NULL, " +
                 WeatherEntry.COLUMN_WIND_SPEED + "REAL NOT NULL, " +
-                WeatherEntry.COLUMN_DEGREES + " REAL NOT NULL" +
-                "); ";
+                WeatherEntry.COLUMN_DEGREES + " REAL NOT NULL," +
+                "UNIQUE (" + WeatherEntry.COLUMN_DATE + ") ON CONFLICT REPLACE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
     }

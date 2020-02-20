@@ -29,8 +29,13 @@
         </activity>
 
         <activity android:name=".SettingsActivity"/>
+        <provider
+            android:authorities="com.example.android.sunshine"
+            android:name="com.example.android.sunshine.data.weatherProvider"/>
+
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+
 
 </manifest>
