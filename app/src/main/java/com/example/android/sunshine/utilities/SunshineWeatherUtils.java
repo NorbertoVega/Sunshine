@@ -15,13 +15,13 @@ public final class SunshineWeatherUtils {
     }
 
     public static String formatTemperature(Context context, double temperature){
-        int temperatureformatResourceId = R.string.format_temperature_celsius;
+        int temperatureFormatResourceId = R.string.format_temperature_celsius;
 
         if (!SunshinePreferences.isMetric(context)){
             temperature = celsiusToFahrenheit(temperature);
-            temperatureformatResourceId = R.string.format_temperature_fahrenheit;
+            temperatureFormatResourceId = R.string.format_temperature_fahrenheit;
         }
-        return String.format(context.getString(temperatureformatResourceId), temperature);
+        return String.format(context.getString(temperatureFormatResourceId), temperature);
     }
 
     public static String formatHighLows(Context context, double high, double low){

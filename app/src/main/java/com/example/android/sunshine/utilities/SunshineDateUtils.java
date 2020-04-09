@@ -7,6 +7,7 @@ import com.example.android.sunshine.R;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public final class SunshineDateUtils {
 
@@ -15,15 +16,24 @@ public final class SunshineDateUtils {
     public static final long HOUR_IN_MILLIS = MINUTE_IN_MILLIS * 60;
     public static final long DAY_IN_MILLIS = HOUR_IN_MILLIS * 24;
 
-    public static long getDayNumber(long date){
-        TimeZone tz = TimeZone.getDefault();
-        long gmtOffset = tz.getOffset(date);
-        return (date + gmtOffset) / DAY_IN_MILLIS;
+    public static long getNormalizedDateForToday() {
+
+        long utcNowMillis = System.currentTimeMillis();
+        TimeZone currentTimeZone = TimeZone.getDefault();
+        long gmtOffsetMillis = currentTimeZone.getOffset(utcNowMillis);
+        long timeSinceEpochLocal = utcNowMillis + gmtOffsetMillis;
+        long daysSinceEpochLocal = TimeUnit.MILLISECONDS.toDays(timeSinceEpochLocal);
+
+        return TimeUnit.DAYS.toMillis(daysSinceEpochLocal);
+    }
+
+    private static long elapsedDaysSinceEpoch(long utcDate) {
+        return TimeUnit.MILLISECONDS.toDays(utcDate);
     }
 
     public static long normalizeDate(long date){
-        long retValNew = date/DAY_IN_MILLIS * DAY_IN_MILLIS;
-        return retValNew;
+        long daysSinceEpoch = elapsedDaysSinceEpoch(date);
+        return daysSinceEpoch * DAY_IN_MILLIS;
     }
 
     public static boolean isDateNormalized(long millisSinceEpoch) {
@@ -35,30 +45,36 @@ public final class SunshineDateUtils {
         return isDateNormalized;
     }
 
+    private static long getLocalMidnightFromNormalizedUtcDate(long normalizedUtcDate) {
+        TimeZone timeZone = TimeZone.getDefault();
 
-    public static long getLocalDateFromUTC(long utcDate){
-        TimeZone tz = TimeZone.getDefault();
-        long gmtOffset = tz.getOffset(utcDate);
-        return utcDate -gmtOffset;
+        long gmtOffset = timeZone.getOffset(normalizedUtcDate);
+        return normalizedUtcDate - gmtOffset;
     }
 
-    public static long getUTCDateFromLocal(long localDate){
-        TimeZone tz = TimeZone.getDefault();
-        long gmtOffset = tz.getOffset(localDate);
-        return localDate + gmtOffset;
+    public static String getFriendlyDateString(Context context, long normalizedUtcMidnight, boolean showFullDate) {
+        long localDate = getLocalMidnightFromNormalizedUtcDate(normalizedUtcMidnight);
+        long daysFromEpochToProvideDate = elapsedDaysSinceEpoch(localDate);
+        long daysFromEpochToToday = elapsedDaysSinceEpoch(System.currentTimeMillis());
 
-    }
-
-    private static String getDayName(Context context, long dateInMillis){
-        long dayNumber = getDayNumber(dateInMillis);
-        long currentDayNumber = getDayNumber(System.currentTimeMillis());
-        if (dayNumber == currentDayNumber){
-            return context.getString(R.string.today);
-        } else if (dayNumber == currentDayNumber +1){
-            return context.getString(R.string.tomorrow);
-        } else {
-            SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
-            return dayFormat.format(dateInMillis);
+        if (daysFromEpochToProvideDate == daysFromEpochToToday || showFullDate) {
+            String dayName = getDayName(context, localDate);
+            String readableDate = getReadableDateString(context, localDate);
+            if (daysFromEpochToProvideDate - daysFromEpochToToday < 2) {
+                String localizedDayName = new SimpleDateFormat("EEEE").format(localDate);
+                return readableDate.replace(localizedDayName, dayName);
+            }
+            else {
+                return readableDate;
+            }
+        } else if (daysFromEpochToProvideDate < daysFromEpochToToday + 7)
+            return getDayName(context, localDate);
+        else {
+            int flags = DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_NO_YEAR
+                        | DateUtils.FORMAT_ABBREV_ALL
+                        | DateUtils.FORMAT_SHOW_WEEKDAY;
+            return DateUtils.formatDateTime(context, localDate, flags);
         }
     }
 
@@ -67,25 +83,21 @@ public final class SunshineDateUtils {
         return DateUtils.formatDateTime(context, timeInMillis, flags);
     }
 
-    public static String getFriendlyDateString(Context context, long dateInMillis, boolean showFullDate){
+    private static String getDayName(Context context, long dateInMillis) {
 
-        long localDate = getLocalDateFromUTC(dateInMillis);
-        long dayNumber = getDayNumber(localDate);
-        long currentDayNumber = getDayNumber(System.currentTimeMillis());
+        long daysFromEpochToProvidedDate = elapsedDaysSinceEpoch(dateInMillis);
+        long daysFromEpochToToday = elapsedDaysSinceEpoch(System.currentTimeMillis());
+        int daysAfterToday = (int) (daysFromEpochToProvidedDate - daysFromEpochToToday);
 
-        if (dayNumber == currentDayNumber || showFullDate){
-            String dayName = getDayName(context, localDate);
-            String readableDate = getReadableDateString(context, localDate);
-            if(dayNumber -currentDayNumber < 2){
-                String localizedDayName = new SimpleDateFormat("EEEE").format(localDate);
-                return readableDate.replace(localizedDayName, dayName);
-            } else
-                return readableDate;
-        } else if (dayNumber < currentDayNumber + 7) {
-            return getDayName(context, localDate);
-        } else {
-            int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_WEEKDAY;
-            return DateUtils.formatDateTime(context, localDate, flags);
+        switch (daysAfterToday) {
+            case 0:
+                return context.getString(R.string.today);
+            case 1:
+                return context.getString(R.string.tomorrow);
+            default:
+                SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+                return dayFormat.format(dateInMillis);
         }
     }
+
 }
