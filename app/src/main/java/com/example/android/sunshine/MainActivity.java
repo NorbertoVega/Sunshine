@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract.WeatherEntry;
-import com.example.android.sunshine.utilities.FakeDataUtils;
+import com.example.android.sunshine.sync.SunshineSyncUtils;
 
 public class MainActivity extends AppCompatActivity
                             implements ForecastAdapter.ForecastAdapterOnClickHandler,
@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0f);
 
-        FakeDataUtils.insertFakeData(this);
-
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_forecast);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity
 
         getLoaderManager().initLoader(FORECAST_LOADER_ID, null, this);
 
-
+        SunshineSyncUtils.startImmediateSync(this);
     }
 
     private void showLoading(){

@@ -11,9 +11,13 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.example.android.sunshine.data.SunshinePreferences;
+import com.example.android.sunshine.data.WeatherContract;
+import com.example.android.sunshine.sync.SunshineSyncUtils;
+
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private void setPreferenceSummary(Preference preference, String value){
+    private void setPreferenceSummary(Preference preference, String value) {
         if (preference instanceof ListPreference){
             ListPreference listPreference = (ListPreference) preference;
             int indexPref = listPreference.findIndexOfValue(value);
@@ -45,7 +49,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         Activity activity = getActivity();
 
         if (key.equals(R.string.pref_location_key)){
-
+            SunshinePreferences.resetLocationCoordinates(activity);
+            SunshineSyncUtils.startImmediateSync(activity);
+        } else if (key.equals(R.string.pref_units_key)) {
+            activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         }
 
         Preference preference = findPreference(key);
