@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.preference.CheckBoxPreference;
-import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -24,7 +23,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             if (indexPref >= 0){
                 listPreference.setSummary(listPreference.getEntries()[indexPref]);
             }
-        } else if (preference instanceof EditTextPreference)
+        } else
             preference.setSummary(value);
     }
 
@@ -48,17 +47,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Activity activity = getActivity();
 
-        if (key.equals(R.string.pref_location_key)){
+        if (key.equals(getString(R.string.pref_location_key))){
             SunshinePreferences.resetLocationCoordinates(activity);
             SunshineSyncUtils.startImmediateSync(activity);
-        } else if (key.equals(R.string.pref_units_key)) {
+        } else if (key.equals(getString(R.string.pref_units_key))) {
             activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         }
 
         Preference preference = findPreference(key);
         if (preference != null){
-            String value = sharedPreferences.getString(preference.getKey(), "");
-            setPreferenceSummary(preference, value);
+            if (!(preference instanceof CheckBoxPreference)) {
+                String value = sharedPreferences.getString(preference.getKey(), "");
+                setPreferenceSummary(preference, value);
+            }
         }
     }
 

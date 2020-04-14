@@ -80,6 +80,19 @@ public class SunshinePreferences {
         return timeSinceLastNotification;
     }
 
+    public static boolean areNotificationsEnabled(Context context) {
+        String displayNotificationsKey = context.getString(R.string.pref_enable_notifications_key);
+        boolean shouldDisplayNotificationsByDefault = context
+                .getResources()
+                .getBoolean(R.bool.show_notification_by_default);
+
+        SharedPreferences sp = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
+        boolean shouldDisplayNotifications = sp
+                .getBoolean(displayNotificationsKey, shouldDisplayNotificationsByDefault);
+
+        return shouldDisplayNotifications;
+    }
+
     public static void saveLastNotificationTime(Context context, long timeOfNotification) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sp.edit();

@@ -18,7 +18,8 @@ public class SunshineFirebaseJobService extends JobService {
             @Override
             protected Void doInBackground(Void... voids) {
 
-                SunshineSyncTask.syncWeather(SunshineFirebaseJobService.this);
+                SunshineSyncTask.syncWeather(getApplicationContext());
+                jobFinished(job, false);
                 return null;
             }
 
@@ -27,6 +28,7 @@ public class SunshineFirebaseJobService extends JobService {
                 jobFinished(job, false);
             }
         };
+        mFetchWeatherTask.execute();
         return true;
     }
 
