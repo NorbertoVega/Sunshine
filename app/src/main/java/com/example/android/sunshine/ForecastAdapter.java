@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,19 +40,22 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     }
 
     @Override
-    public void onBindViewHolder(ForecastAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
 
-        long dateInmilis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
-        String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInmilis, false);
+        long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+        String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
         int weatherId = mCursor.getInt(MainActivity.INDEX_WEATHER_CONDITION_ID);
         String description = SunshineWeatherUtils.getStringForWeatherCondition(mContext, weatherId);
-        double max = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
-        double min = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
-        String minAndMaxTemp = SunshineWeatherUtils.formatHighLows(mContext, max, min);
-        String weatherSummary = dateString + " - " + description + " - " + minAndMaxTemp;
+        int forecastImageViewResource = SunshineWeatherUtils.getSmallArtResourceIdForWeatherCondition(weatherId);
+        double highInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
+        double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
 
-        holder.mWeatherSummary.setText(weatherSummary);
+        forecastAdapterViewHolder.forecastImageView.setImageResource(forecastImageViewResource);
+        forecastAdapterViewHolder.dateTextView.setText(dateString);
+        forecastAdapterViewHolder.descriptionTextView.setText(description);
+        forecastAdapterViewHolder.minTextView.setText(SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius));
+        forecastAdapterViewHolder.maxTextView.setText(SunshineWeatherUtils.formatTemperature(mContext, highInCelsius));
     }
 
     @Override
@@ -68,11 +72,19 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public final TextView mWeatherSummary;
+        final ImageView forecastImageView;
+        final TextView dateTextView;
+        final TextView descriptionTextView;
+        final TextView minTextView;
+        final TextView maxTextView;
 
         public ForecastAdapterViewHolder(View itemView){
             super(itemView);
-            mWeatherSummary = itemView.findViewById(R.id.tv_weather_data);
+            forecastImageView = itemView.findViewById(R.id.forecastImageView);
+            dateTextView = itemView.findViewById(R.id.dateTextView);
+            descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            minTextView = itemView.findViewById(R.id.minTextView);
+            maxTextView = itemView.findViewById(R.id.maxTextView);
             itemView.setOnClickListener(this);
         }
 
