@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp">
+
+        <ImageView
+            android:id="@+id/forecastImageView"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date"
+            tools:src="@drawable/art_clouds" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Today, April 03" />
+
+        <TextView
+            android:id="@+id/weather_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="@+id/forecastImageView"
+            app:layout_constraintStart_toStartOf="@+id/forecastImageView"
+            app:layout_constraintTop_toBottomOf="@+id/forecastImageView"
+            tools:text="Rainy" />
+
+        <TextView
+            android:id="@+id/high_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:textSize="60sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/forecastImageView"
+            tools:text="19\u00b0" />
+
+        <TextView
+            android:id="@+id/low_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="35sp"
+            app:layout_constraintBottom_toBottomOf="@+id/weather_description"
+            app:layout_constraintEnd_toEndOf="@+id/high_temperature"
+            app:layout_constraintStart_toStartOf="@+id/high_temperature"
+            app:layout_constraintTop_toBottomOf="@+id/high_temperature"
+            tools:text="10\u00b0" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

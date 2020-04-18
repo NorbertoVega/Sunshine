@@ -47,12 +47,12 @@
 
     <!-- Temperature format in Celsius [CHAR LIMIT=5] -->
     <string name="format_temperature_celsius">
-        <xliff:g id="temp">%1.0f</xliff:g>\u00B0C
+        <xliff:g id="temp">%1.0f</xliff:g>\u00B0
     </string>
 
     <!-- Temperature format in Fahrenheit [CHAR LIMIT=5] -->
     <string name="format_temperature_fahrenheit">
-        <xliff:g id="temp">%1.0f</xliff:g>\u00B0F
+        <xliff:g id="temp">%1.0f</xliff:g>\u00B0
     </string>
 
     <!-- Wind in kph [CHAR LIMIT=25] -->
@@ -171,6 +171,9 @@
         High:<xliff:g id="high">%2$s</xliff:g>
         Low:<xliff:g id="low">%3$s</xliff:g>
     </string>
+    <string name="humidity_label">Humidity</string>
+    <string name="pressure_label">Pressure</string>
+    <string name="wind_label">Wind</string>
 
 
 </resources>

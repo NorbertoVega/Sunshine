@@ -16,8 +16,12 @@ import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
 
     private final Context mContext;
-
     private final ForecastAdapterOnClickHandler mClickHandler;
+
+    private static final int VIEW_TYPE_TODAY = 555;
+    private static final int VIEW_TYPE_FUTURE = 666;
+
+    private boolean mUseTodayLayout;
 
     public interface ForecastAdapterOnClickHandler{
         void onListItemClick(long date);
@@ -28,13 +32,27 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     public ForecastAdapter(ForecastAdapterOnClickHandler clickHandler, Context context){
         mClickHandler = clickHandler;
         mContext = context;
+        mUseTodayLayout = mContext.getResources().getBoolean(R.bool.use_today_layout);
     }
 
     @Override
-    public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.forecast_list_item, parent, false);
+    public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+
+        int listItemResource;
+
+        try{
+            if ( viewType == VIEW_TYPE_TODAY)
+                listItemResource = R.layout.list_item_forecast_today;
+            else
+                listItemResource= R.layout.forecast_list_item;
+        } catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        View view = LayoutInflater
+                .from(mContext)
+                .inflate(listItemResource, viewGroup, false);
 
         return new ForecastAdapterViewHolder(view);
     }
@@ -46,16 +64,31 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
         String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
         int weatherId = mCursor.getInt(MainActivity.INDEX_WEATHER_CONDITION_ID);
+        int weatherImageId;
         String description = SunshineWeatherUtils.getStringForWeatherCondition(mContext, weatherId);
-        int forecastImageViewResource = SunshineWeatherUtils.getSmallArtResourceIdForWeatherCondition(weatherId);
         double highInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
         double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
 
-        forecastAdapterViewHolder.forecastImageView.setImageResource(forecastImageViewResource);
-        forecastAdapterViewHolder.dateTextView.setText(dateString);
-        forecastAdapterViewHolder.descriptionTextView.setText(description);
-        forecastAdapterViewHolder.minTextView.setText(SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius));
-        forecastAdapterViewHolder.maxTextView.setText(SunshineWeatherUtils.formatTemperature(mContext, highInCelsius));
+        try {
+            if (mUseTodayLayout && position == 0) {
+                weatherImageId = SunshineWeatherUtils.getLargeArtResourceIdForWeatherCondition(weatherId);
+
+            }
+            else {
+                weatherImageId = SunshineWeatherUtils.getSmallArtResourceIdForWeatherCondition(weatherId);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        forecastAdapterViewHolder.iconView.setImageResource(weatherImageId);
+        forecastAdapterViewHolder.dateView.setText(dateString);
+        forecastAdapterViewHolder.descriptionView.setText(description);
+        forecastAdapterViewHolder.lowTempView.setText(SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius));
+        forecastAdapterViewHolder.highTempView.setText(SunshineWeatherUtils.formatTemperature(mContext, highInCelsius));
+
+
     }
 
     @Override
@@ -70,21 +103,29 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         notifyDataSetChanged();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (mUseTodayLayout && position == 0)
+            return VIEW_TYPE_TODAY;
+        else
+            return VIEW_TYPE_FUTURE;
+    }
+
     class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        final ImageView forecastImageView;
-        final TextView dateTextView;
-        final TextView descriptionTextView;
-        final TextView minTextView;
-        final TextView maxTextView;
+        final ImageView iconView;
+        final TextView dateView;
+        final TextView descriptionView;
+        final TextView highTempView;
+        final TextView lowTempView;
 
-        public ForecastAdapterViewHolder(View itemView){
-            super(itemView);
-            forecastImageView = itemView.findViewById(R.id.forecastImageView);
-            dateTextView = itemView.findViewById(R.id.dateTextView);
-            descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
-            minTextView = itemView.findViewById(R.id.minTextView);
-            maxTextView = itemView.findViewById(R.id.maxTextView);
+        public ForecastAdapterViewHolder(View view){
+            super(view);
+            iconView = view.findViewById(R.id.forecastImageView);
+            dateView = view.findViewById(R.id.date);
+            descriptionView = view.findViewById(R.id.weather_description);
+            highTempView = view.findViewById(R.id.high_temperature);
+            lowTempView = view.findViewById(R.id.low_temperature);
             itemView.setOnClickListener(this);
         }
 
