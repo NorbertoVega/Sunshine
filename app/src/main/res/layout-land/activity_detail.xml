@@ -5,21 +5,21 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="4dp">
 
         <include
             android:id="@+id/primary_weather_info"
             layout="@layout/primary_weather_info"
-            android:layout_height="0dp"
-            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
             android:layout_weight="1"/>
 
         <include
             android:id="@+id/extra_weather_details"
             layout="@layout/extra_weather_details"
-            android:layout_height="0dp"
-            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
             android:layout_weight="1"/>
     </LinearLayout>
 </layout>
