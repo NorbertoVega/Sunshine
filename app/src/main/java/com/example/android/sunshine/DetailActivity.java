@@ -114,7 +114,7 @@ public class DetailActivity extends AppCompatActivity
 
         if (!cursorHasValidData)
             return;
-        
+
         long localDateMidnightGmt = data.getLong(INDEX_WEATHER_DATE);
         String dateText = SunshineDateUtils.getFriendlyDateString(this, localDateMidnightGmt, true);
         mDetailBinding.primaryWeatherInfo.date.setText(dateText);

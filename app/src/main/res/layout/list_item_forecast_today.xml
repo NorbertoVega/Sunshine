@@ -7,16 +7,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="12dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="12dp">
+        android:background="@color/colorPrimary"
+        android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"
+        android:paddingTop="@dimen/today_forecast_list_item_vertical_padding">
 
         <ImageView
             android:id="@+id/forecastImageView"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-
+            android:layout_width="@dimen/today_icon"
+            android:layout_height="@dimen/today_icon"
             android:layout_marginStart="24dp"
             android:layout_marginLeft="24dp"
             android:layout_marginTop="12dp"
@@ -28,6 +26,8 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/white"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,6 +39,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/forecast_text_size"
             app:layout_constraintEnd_toEndOf="@+id/forecastImageView"
             app:layout_constraintStart_toStartOf="@+id/forecastImageView"
             app:layout_constraintTop_toBottomOf="@+id/forecastImageView"
@@ -51,7 +53,9 @@
 
             android:layout_marginEnd="32dp"
             android:layout_marginRight="32dp"
-            android:textSize="60sp"
+            android:textSize="72sp"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-light"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/forecastImageView"
             tools:text="19\u00b0" />
@@ -60,14 +64,15 @@
             android:id="@+id/low_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:layout_marginTop="4dp"
-            android:textSize="35sp"
+            android:textSize="36sp"
+            android:fontFamily="sans-serif-light"
             app:layout_constraintBottom_toBottomOf="@+id/weather_description"
             app:layout_constraintEnd_toEndOf="@+id/high_temperature"
             app:layout_constraintStart_toStartOf="@+id/high_temperature"
             app:layout_constraintTop_toBottomOf="@+id/high_temperature"
             tools:text="10\u00b0" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
